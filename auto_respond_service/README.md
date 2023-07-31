@@ -1,4 +1,4 @@
-Here is the instructions and the code snippets used to set up a REST API that accepts both HTTP and HTTPS requests to a SageMaker endpoint (as of now, 12 March 2023). The tech stack used is AWS-only. The general idea was explained in the blog [post](https://aws.amazon.com/blogs/machine-learning/call-an-amazon-sagemaker-model-endpoint-using-amazon-api-gateway-and-aws-lambda/).
+Here is the instructions and the code snippets used to set up a REST API that accepts both HTTP and HTTPS requests to a SageMaker endpoint (as of now, 12 March 2023). The tech stack used is AWS-only. The general idea was explained in the blog [post](https://aws.amazon.com/blogs/machine-learning/call-an-amazon-sagemaker-model-endpoint-using-amazon-api-gateway-and-aws-lambda/). All code snippets are included in the Jupyter Notebook above. 
 
 ## 1. Set up SageMaker endpoint:
 
@@ -14,7 +14,7 @@ response = runtime.invoke_endpoint(EndpointName=ENDPOINT_NAME,
                                        Body=bytes(messageStr, 'utf-8'),
                                        ContentType='application/json')
 ```
-There are 2 compulsory arguments to pass. `ContentType` specifies the type of content to pass to the model. **For all HuggingFace model, the input is a json file, as specified [here](https://huggingface.co/docs/api-inference/detailed_parameters)**. The second is `Body`, which needs to be "bytes or seekable file-like object", according to the [docs](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sagemaker-runtime/client/invoke_endpoint.html). The most peculiar thing is the json file sent will automatically has all its double-quotes replaced with single quotes, while the model expects all double quotes (correct json format). That's where the `.replace()` method came in.
+There are 2 compulsory arguments to pass. `ContentType` specifies the type of content to pass to the model. **For all HuggingFace model, the input is a json file, as specified [here](https://huggingface.co/docs/api-inference/detailed_parameters)**. The second is `Body`, which needs to be "bytes or seekable file-like object", according to the [docs](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sagemaker-runtime/client/invoke_endpoint.html). The most peculiar thing is the json file sent will automatically has all its double-quotes replaced with single quotes, while the model expects all double quotes (correct json format). That was why I added the `.replace()` method in the code snippet.
 
 ## 3. Set up a REST API with API Gateway and CloudFront.
 
@@ -28,4 +28,4 @@ After configuring a CloudFront distribution, it worked.
 
 ![](postman_2.png)
 
-Afterwards, team web app integrated the API to the backend and it worked.
+Afterwards, the backend team integrated the API to the backend and we are done.
